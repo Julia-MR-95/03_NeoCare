@@ -1,0 +1,17 @@
+Variables privadas
+.env
+.env.*
+
+Python
+pycache/
+*.pyc
+
+Frontend
+node_modules/
+dist/
+coverage/
+
+Backend Java
+target/
+.gradle/
+*.class
