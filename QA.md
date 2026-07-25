@@ -156,3 +156,13 @@ Todos los usuarios pueden acceder a todos los informes de horas por usuario y ho
 2. CORS configurado para permitir peticiones del frontend ('localhost:5000', dominio de producción).
 3. Documentación automática disponible y funcional en '/docs' (Swagger) y '/redoc'.
 
+## Limitaciones conocidas
+| Título | Limitación |
+| :--- | :---: | 
+| Informes por semana | Los informes actuales son por tablero completo (horas por tarjeta, horas por usuario) sin filtrar por semana ('week=YYYY-WW). No se implementó un endpoint de "tareas completadas/vencidas/creadas recientemnte". |
+Mejoras de productividad | Queda pendiente. |
+Exportación CSV | Se resolvió el frontend (convierte el JSON ya cargadoa CSV y lo descarga), pero no existe un endpoint de backend dedicado a generar el archivo. |
+Columna "de cierre" identificada por nombre exacto | El cálculo automátido de horas (creación -> completado) detecta la columna de cierre buscando el texto exacto "Completado". Si se renombra la columna, deja de detectarse. En una v2 se añadiría un campo 'is_done' a la lista en vez de comparar por título. |
+Detalle de horas por tarjeta en FastAPI es privado por usuario | Cada versona ve el desglose de sus propias horas en 'GET /worklogs/card{id}', aunque en el tablero y en '/hours' y '/report' sí es visible para todos los usuarios autenticados. |
+Avisos de dependecias obsoletas | Quedan 12 warnings de Pydantic ('class Config' en vez de 'ConfigDict') y SQLAlchemy ('declarative_base()') que no afectan al funcionamiento. Se dejan para no tocar decenas de archivos sin necesidad real. |
+Sin pruebas automáticas del frontend | La cobertura de test automáticos es únicamente del backend. El frontent se probó de forma manual |
