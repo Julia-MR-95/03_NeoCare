@@ -1,4 +1,4 @@
-# Pruebas - Neocare
+# QA - Neocare
 
 ## Información general:
 Proyecto: Tablero de trabajo para NeoCare Health Kanban
@@ -30,7 +30,7 @@ El método 'DELETE /me' desactiva la cuenta (is_active = False) sin eliminar el 
 | DELETE | /me | 204 No Content - desactiva cuenta | Sí | correcto |
 | GET | /{user_id} | 200 OK - prefil de otro usuario | Sí | correcto |
 
-3. Bosrds: /api/v1/boards
+3. Boards: /api/v1/boards
 Regla verificada: un usuario sólo puede modificar/eliminar boards de los que es 'owner_id'. 
 
 | Método | Ruta | Resultado esperado | Estado |
@@ -87,23 +87,61 @@ Todos los usuarios pueden acceder a todos los informes de horas por usuario y ho
 
 | Archivo | Qué cubre | 
 | :--- | :---: | 
-| test | /board/{board_id}/hours-by-card |
+| test_auth.py | Registro, login (in)correcto, rutas protegidas con/sin token, contraseña siempre tratada como texto |
+| test_card.py | Crear/ver/editar/borrar tarjetas, permisos de creator, arrastrar y soltar entre columnas, reordenar dentro de la misma columna |
+| test_worklogs.py | Validación mínima de horas (0.25h), fechas futuras rechazadas, límite de 200 caracteres en notas, permisos de regisgtros, suma total por tarjeta |
+| test_reports.py | Cálculo de horas por tarteja y por usuario, acceso compartido a informes |
+| test_permissions.py | tablero compartido (visibilidad entre usuarios), no fuga de contraseñas, cálculo automático de horas al completar tarjetas |
 
 ## Incidencias detectadas y resueltas durante el QA
-1. 'ModuleNotFoundError: No mocule named 'app'' | Uvicorn ejecutado desde carpeta raíz incorrecta | Ejecutar desde 'neocare-backend'
-2. Faltaban __init__.py en subcarpetas | No se habían creado | Creados en 'app/', 'api/v1', 'core/', 'models/', 'schemas/'.
-3. uvicorn apuntaba al Python global, no al venv | PATH del sistema | Uso de '../.venv/bin/python -m uvicorn'
-4. Conflicto 'jose' vs 'PyJWT' | Librería incorrecta importada | Migrado a 'PyJWT' ('import jwt', 'PyJWTError')
-5. Conflicto 'passlib' vs 'bycript' | Librería desactualizada | Migrado a 'bcrypt' directo ('bcript.hashpw', 'bcrypt.checkpw')
-6. 'config.py' leía '.env.example' en vez de '.env' | Error de configuración | Corregido 'env_file = ".env"'
-7. Inconsistencia 'name' vs 'title' en Board/BoardList/Label | Falta de convención unificada | Unificado a 'title' en todos los modelos y schemas
-8. Inconsistencia 'owner_id' vs 'assignee_id' en Card/Board | Confusión conceptual entre dueño de board y responsable de tarjeta | 'Baord.owner_id' vs 'Card.assignee_id'
-9. Funciones auxiliares con 'Depends()' llamadas manualmente | 'Depends' sólo funciona vía inyección de FastAPI en endpoints | Refactorizadas para recibir 'db' y 'current_user' como parámetros normales
-10. Endpoints duplicados en 'worklogs.py' | Copia accidental de funciones | Eliminados duplicados, un único router limpio
-11. URLs duplicadas '/api/v1/users/user/...' | Prefix en rutas del router + prefix en 'main.py' | Rutas del router simplificadas a '/', '/{user_id}'
-12. 'from_attribute' sin la 's' en varios schemas | Error tipográfico | Corregido a 'from_attributes = True' en todos los 'Config'
-13. 'GET /users' y 'GET /users/{id}' sin autenticación | Faltaba 'Depends(get_current_user)' | Añadida dependencia de autenticación
-14. Router 'lists' no registrado en 'main.py' | Importado pero no incluido con 'include_router' | Añadida línea de registro
+### Backend
+| # | Bug | Causa | Corrección |
+| :--- | :---: | :---: | ---: |
+1 | 'ModuleNotFoundError: No mocule named 'app'' | Uvicorn ejecutado desde carpeta raíz incorrecta | Ejecutar desde 'neocare-backend'
+2 | Faltaban __init__.py en subcarpetas | No se habían creado | Creados en 'app/', 'api/v1', 'core/', 'models/', 'schemas/'.
+3 | uvicorn apuntaba al Python global, no al venv | PATH del sistema | Uso de '../.venv/bin/python -m uvicorn'
+4 | Conflicto 'jose' vs 'PyJWT' | Librería incorrecta importada | Migrado a 'PyJWT' ('import jwt', 'PyJWTError')
+5 | Conflicto 'passlib' vs 'bycript' | Librería desactualizada | Migrado a 'bcrypt' directo ('bcript.hashpw', 'bcrypt.checkpw')
+6 | 'config.py' leía '.env.example' en vez de '.env' | Error de configuración | Corregido 'env_file = ".env"'
+7 | Inconsistencia 'name' vs 'title' en Board/BoardList/Label | Falta de convención unificada | Unificado a 'title' en todos los modelos y schemas
+8 | Inconsistencia 'owner_id' vs 'assignee_id' en Card/Board | Confusión conceptual entre dueño de board y responsable de tarjeta | 'Baord.owner_id' vs 'Card.assignee_id'
+9 | Funciones auxiliares con 'Depends()' llamadas manualmente | 'Depends' sólo funciona vía inyección de FastAPI en endpoints | Refactorizadas para recibir 'db' y 'current_user' como parámetros normales
+10 | Endpoints duplicados en 'worklogs.py' | Copia accidental de funciones | Eliminados duplicados, un único router limpio
+11 | URLs duplicadas '/api/v1/users/user/...' | Prefix en rutas del router + prefix en 'main.py' | Rutas del router simplificadas a '/', '/{user_id}'
+12 | 'from_attribute' sin la 's' en varios schemas | Error tipográfico | Corregido a 'from_attributes = True' en todos los 'Config'
+13 | 'GET /users' y 'GET /users/{id}' sin autenticación | Faltaba 'Depends(get_current_user)' | Añadida dependencia de autenticación
+14 | Router 'lists' no registrado en 'main.py' | Importado pero no incluido con 'include_router' | Añadida línea de registro
+15 | 'move_card' fallaba con 'AttributeError' | Typo 'db.quert()' en vez de 'db.query()' | Corregido el nombre
+16 | Reordenar tarjetas dentro de la misma columna no hacía nada | Toda la lógica de 'move_card' estaba dentro de un 'if' que solo cubría el cambio de columna | Añadida rama 'else' para el reordenamiento dentro de la misma lista
+17 | Mover tarjeta entre columnas no reordenaba bien la lista destino | Copiar-pegar: filtraba 'old_lis_id' dos veces en vez de 'new_list_id' en el segundo bloque | Corregido el filtro
+18 | Login funcionaba pero la peticiones posteriores daban 401 | 'user_id' del token (texto) se comparaba directamente con 'User.id' (número) sin convertir | Cast explícito a 'int()'
+19 | 'users/me' fallaba de forma intermitente | Un endpoint local sobreescribía el nombre de la dependencia 'get_current_user' importada | Renombrado el handler local
+20 | CORS bloqueaba el frontend en local | Backend permitía 'localhost:5000', Vite corre en '5173' | Corregido el puerto permitido
+21 | 'requirements.txt' vacío | Nunca se generó | Creado con las dependencias reales detectadas en el código
+22 | Actualizar sólo la nota de un registros borraba las horas | 'worklog.hours = worklod_data.hours' ejecutaba sin comprobar si venía 'None' | Solo se actualiza el valor si no es 'None'
+23 | 'create_access_token' y 'move_card' fallaban con 'AttributeError: 'datetime.datetime' has no attribute 'datetime'' | Se llamaba a 'datetime.datetime()' habiendo importado ya la clase directamente ('from datetime import datetime') | Sustituido por 'datetime.now(timezone.utc)', y elimina una línea redundante (el modelo ya actualiza 'updated_at' solo)
+24 | Login fallaba tras iniciar sesión con contraseñas numéricas | Sin blindaje explícito de tipo | Validador Pydantic que fuerza 'str(v)' antes de validar
+25 | 'total_hours'/'hours_per-user' provocaban '500 Internal Server Error' | Dos causas: referencia adelantada innecesaria ('List['HoursPerUser']') que confundía a Pydantic, y un error de sintaxis real ('totals[uid]...' con paréntesis en vez de corchetes) | Quitadas las comilla de la anotación: reescrita la función usando 'dataclass' en vez de diccionarios
+26 | |'GET /users/' filtraba el hash de la contraseña de todos los usuarios | Endpoint sin 'response_model': FastAPI serializaba el objeto ORM completo | Añadido 'response_model'
+27 | Tablero compartido roto tras abrir el tablero a todos los usuarios | 'worklogs.py' y 'reports.py' seguían exigiendo 'board.owner == current_user.id', y bloqueaba a cualquiera que no fuera el creador original del tablero | Quitada de la comprobación de propietario en 'get_card_access' y 'board_access'
+
+### Frontend
+| # | Bug | Causa | Corrección |
+| :--- | :---: | :---: | ---: |
+1 | La app no arrancaba ('Invalid hook call') | Import corregido, dependencias reinstaladas desde cero
+2 | Sesión no persisitía al recargar, redirigía al login sin motivo | Discrepancia de nombre en 'localStorage': se guardaba como 'access_token' pero se leía como 'acess_token'/'acces_token' en distintos puntos | Unificado el nombre en todos los usos
+3 | '/login' no redirigía aunque ya hubiera sesión válida | 'LoginPage' nunca comprobaba 'user'/'loading' del contexto de auth | Añadido 'useEffect' que redirige si ya hay sesión
+4 | Al caducar el token a mitad del uso, tras logearse se aterrizaba en el tablero, nunca en la página de origen | No se guardaba "a dónde ibas" antes de redirigir al login | Se guarda como parámetro '? redirect=' en la URL (que sobrevive a la recargwa completa que dispara el interceptor de axios)
+5 | Tarjetas se veían como texto plano y no se podían arrastrar | Faltabla la clase CSS '.kanban-card'; sin el 'touch-action:none' el navegador competía con 'dond-kit' por interpretar el gesto como selección de texto | Añadidos los estilos y 'touchAction: 'none''
+6 | El tablero se veía centrado en una cjaa de ancho fijo con columnas cortadas | Restos de una plantilla base | Eliminadas esas reglas
+7 | Varios errores de sintaxis JSX/TS a lo largo del desarrollo | Errores de tecleo al copiar/adaptar el código a mano | Corregiso uno a uno
+
+### Pytest
+1 | Error de zonas horarias 'TypeError: can't substract offset-naive and offset-aware datetimes' | 'created_at' era un datetime naive mientras que 'datetime.now(timezone.utc)' era aware | Normalización de 'created_at' a un datetime aware
+2 | Rutas incorrectas en los tests | Se corrigieron rutas y llamadas al endpoint (especialmente de WorkLogs)
+3 | Enpoint incorrecto en pruebas | Se ajustaron las pruebas para utilizar el enpoint adecuado
+4 | Error en el informe por usuario: faltaba la creación del worklog de Julia para sumarla a la de Carlos | Se añadió la creación del registro faltante
+5 | Eliminación del WorkLog automático | Se verifica que únicamente se elemina el WorkLog automático y los manuales no se modifican
 
 ## Infraestructura verificada
 1. Alembic configurado y sincronizado con el esato actual de la BBDD
