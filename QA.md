@@ -134,22 +134,22 @@ Todos los usuarios pueden acceder a todos los informes de horas por usuario y ho
 ### Frontend
 | # | Bug | Causa | Corrección |
 | :--- | :---: | :---: | ---: |
-1 | La app no arrancaba ('Invalid hook call') | Import corregido, dependencias reinstaladas desde cero
-2 | Sesión no persisitía al recargar, redirigía al login sin motivo | Discrepancia de nombre en 'localStorage': se guardaba como 'access_token' pero se leía como 'acess_token'/'acces_token' en distintos puntos | Unificado el nombre en todos los usos
-3 | '/login' no redirigía aunque ya hubiera sesión válida | 'LoginPage' nunca comprobaba 'user'/'loading' del contexto de auth | Añadido 'useEffect' que redirige si ya hay sesión
-4 | Al caducar el token a mitad del uso, tras logearse se aterrizaba en el tablero, nunca en la página de origen | No se guardaba "a dónde ibas" antes de redirigir al login | Se guarda como parámetro '? redirect=' en la URL (que sobrevive a la recargwa completa que dispara el interceptor de axios)
-5 | Tarjetas se veían como texto plano y no se podían arrastrar | Faltabla la clase CSS '.kanban-card'; sin el 'touch-action:none' el navegador competía con 'dond-kit' por interpretar el gesto como selección de texto | Añadidos los estilos y 'touchAction: 'none''
-6 | El tablero se veía centrado en una cjaa de ancho fijo con columnas cortadas | Restos de una plantilla base | Eliminadas esas reglas
-7 | Varios errores de sintaxis JSX/TS a lo largo del desarrollo | Errores de tecleo al copiar/adaptar el código a mano | Corregiso uno a uno
+1 | La app no arrancaba ('Invalid hook call') | Import corregido, dependencias reinstaladas desde cero |
+2 | Sesión no persisitía al recargar, redirigía al login sin motivo | Discrepancia de nombre en 'localStorage': se guardaba como 'access_token' pero se leía como 'acess_token'/'acces_token' en distintos puntos | Unificado el nombre en todos los usos |
+3 | '/login' no redirigía aunque ya hubiera sesión válida | 'LoginPage' nunca comprobaba 'user'/'loading' del contexto de auth | Añadido 'useEffect' que redirige si ya hay sesión |
+4 | Al caducar el token a mitad del uso, tras logearse se aterrizaba en el tablero, nunca en la página de origen | No se guardaba "a dónde ibas" antes de redirigir al login | Se guarda como parámetro '? redirect=' en la URL (que sobrevive a la recargwa completa que dispara el interceptor de axios) |
+5 | Tarjetas se veían como texto plano y no se podían arrastrar | Faltabla la clase CSS '.kanban-card'; sin el 'touch-action:none' el navegador competía con 'dond-kit' por interpretar el gesto como selección de texto | Añadidos los estilos y 'touchAction: 'none'' |
+6 | El tablero se veía centrado en una cjaa de ancho fijo con columnas cortadas | Restos de una plantilla base | Eliminadas esas reglas |
+7 | Varios errores de sintaxis JSX/TS a lo largo del desarrollo | Errores de tecleo al copiar/adaptar el código a mano | Corregiso uno a uno |
 
 ### Pytest
 | # | Bug | Causa | Corrección |
 | :--- | :---: | :---: | ---: |
-1 | Error de zonas horarias 'TypeError: can't substract offset-naive and offset-aware datetimes' | 'created_at' era un datetime naive mientras que 'datetime.now(timezone.utc)' era aware | Normalización de 'created_at' a un datetime aware
-2 | Rutas incorrectas en los tests | Se corrigieron rutas y llamadas al endpoint (especialmente de WorkLogs)
-3 | Enpoint incorrecto en pruebas | Se ajustaron las pruebas para utilizar el enpoint adecuado
-4 | Error en el informe por usuario: faltaba la creación del worklog de Julia para sumarla a la de Carlos | Se añadió la creación del registro faltante
-5 | Eliminación del WorkLog automático | Se verifica que únicamente se elemina el WorkLog automático y los manuales no se modifican
+1 | Error de zonas horarias 'TypeError: can't substract offset-naive and offset-aware datetimes' | 'created_at' era un datetime naive mientras que 'datetime.now(timezone.utc)' era aware | Normalización de 'created_at' a un datetime aware |
+2 | Rutas incorrectas en los tests | ---- | Se corrigieron rutas y llamadas al endpoint (especialmente de WorkLogs) |
+3 | Enpoint incorrecto en pruebas | ---- | Se ajustaron las pruebas para utilizar el enpoint adecuado |
+4 | Error en el informe por usuario |altaba la creación del worklog de Julia para sumarla a la de Carlos | Se añadió la creación del registro faltante |
+5 | Eliminación del WorkLog automático | ---- | Se verifica que únicamente se elemina el WorkLog automático y los manuales no se modifican |
 
 ## Infraestructura verificada
 1. Alembic configurado y sincronizado con el esato actual de la BBDD
