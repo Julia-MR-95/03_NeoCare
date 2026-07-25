@@ -128,7 +128,7 @@ Todos los usuarios pueden acceder a todos los informes de horas por usuario y ho
 23 | 'create_access_token' y 'move_card' fallaban con 'AttributeError: 'datetime.datetime' has no attribute 'datetime'' | Se llamaba a 'datetime.datetime()' habiendo importado ya la clase directamente ('from datetime import datetime') | Sustituido por 'datetime.now(timezone.utc)', y elimina una línea redundante (el modelo ya actualiza 'updated_at' solo)
 24 | Login fallaba tras iniciar sesión con contraseñas numéricas | Sin blindaje explícito de tipo | Validador Pydantic que fuerza 'str(v)' antes de validar
 25 | 'total_hours'/'hours_per-user' provocaban '500 Internal Server Error' | Dos causas: referencia adelantada innecesaria ('List['HoursPerUser']') que confundía a Pydantic, y un error de sintaxis real ('totals[uid]...' con paréntesis en vez de corchetes) | Quitadas las comilla de la anotación: reescrita la función usando 'dataclass' en vez de diccionarios
-26 | |'GET /users/' filtraba el hash de la contraseña de todos los usuarios | Endpoint sin 'response_model': FastAPI serializaba el objeto ORM completo | Añadido 'response_model'
+26 |'GET /users/' filtraba el hash de la contraseña de todos los usuarios | Endpoint sin 'response_model': FastAPI serializaba el objeto ORM completo | Añadido 'response_model'
 27 | Tablero compartido roto tras abrir el tablero a todos los usuarios | 'worklogs.py' y 'reports.py' seguían exigiendo 'board.owner == current_user.id', y bloqueaba a cualquiera que no fuera el creador original del tablero | Quitada de la comprobación de propietario en 'get_card_access' y 'board_access'
 
 ### Frontend
