@@ -75,11 +75,16 @@ def handle_completion(card: Card, new_list: BoardList, db:Session, current_user:
     leaving_completed = new_list.title != COMPLETED_LIST_TITLE and card.completed_at is not None
 
     if entering_completed:
+        created_at=card.created_at
+        if created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=timezone.utc)
+
         now = datetime.now(timezone.utc)
         card.completed_at = now
 
-        hours_passed = (now - card.created_at).total_seconds() / 3600
+        hours_passed = (now - created_at).total_seconds() / 3600
         hours_passed = max(0.25, round(hours_passed, 2))
+    
 
         #si ya se había completado antes
         db.query(WorkLog).filter(WorkLog.card_id == card.id, WorkLog.is_automatic == True).delete()

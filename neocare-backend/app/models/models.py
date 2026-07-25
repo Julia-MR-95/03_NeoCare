@@ -18,14 +18,14 @@ class User(Base):
     full_name = Column(String(255), nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
 class Board(Base):
     __tablename__ = "boards"
     id = Column(Integer, primary_key=True)
     title = Column(String(255), nullable=False)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)    
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     #relación con otras clases
     lists = relationship("BoardList", back_populates="board", 
                           order_by="BoardList.order", cascade="all, delete")

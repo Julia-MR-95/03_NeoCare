@@ -13,8 +13,8 @@ def test_hours_by_card_report(client):
     headers=register_and_login(client, email="reportes1@neocare.com")
     board_id, card1, card2 = _setup_board_two_cards(client, headers)
 
-    client.post("/api/v1/worklogs/", json={"card_id":card1, "hours":3,"date":datetime.now(timezone.utc).isoformat}, headers=headers)
-    client.post("/api/v1/worklogs/", json={"card_id":card2, "hours":1,"date":datetime.now(timezone.utc).isoformat}, headers=headers)
+    client.post("/api/v1/worklogs/", json={"card_id":card1, "hours":3,"date":datetime.now(timezone.utc).isoformat()}, headers=headers)
+    client.post("/api/v1/worklogs/", json={"card_id":card2, "hours":1,"date":datetime.now(timezone.utc).isoformat()}, headers=headers)
 
     res=client.get(f"/api/v1/reports/board/{board_id}/hours-by-card", headers=headers)
     assert res.status_code == 200
@@ -32,6 +32,9 @@ def test_hours_by_user_report(client):
     res=client.get(f"/api/v1/reports/board/{board_id}/hours-by-user", headers=julia_headers)
     assert res.status_code == 200
     totals={row["user_email"]:row["total_hours"] for row in res.json()} #dicc indexado por mail
+
+    print(res.json())
+
     assert totals["reportes2@neocare.com"]==2
     assert totals["reportes3@neocare.com"]==4
 

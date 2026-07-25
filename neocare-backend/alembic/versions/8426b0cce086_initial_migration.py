@@ -9,6 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from datetime import datetime, timezone
 
 
 # revision identifiers, used by Alembic.
@@ -29,7 +30,7 @@ def upgrade() -> None:
         sa.Column('full_name', sa.String(length=255), nullable=False),
         sa.Column('hashed_password', sa.String(), nullable=False),
         sa.Column('is_active', sa.Boolean(), server_default=sa.true()),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now())
+        sa.Column('created_at', sa.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     )
 
     op.create_table(
@@ -37,7 +38,7 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer(), primary_key=True),
         sa.Column('title', sa.String(length=255), nullable=False),
         sa.Column('owner_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=False),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now())
+        sa.Column('created_at', sa.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     )
 
     op.create_table(
@@ -58,8 +59,8 @@ def upgrade() -> None:
         sa.Column('assignee_id', sa.Integer(), sa.ForeignKey("users.id"), nullable=True),
         sa.Column('due_date', sa.DateTime(timezone=True), nullable=True),
         sa.Column('order',sa.Integer(), nullable=False, default='0'),
-        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now()),
-        sa.Column('updated_at',sa.DateTime(timezone=True), onupdate=sa.func.now()),
+        sa.Column('created_at', sa.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False),
+        sa.Column('updated_at',sa.DateTime(timezone=True), onupdate=sa.datetime.now(timezone.utc)),
         sa.Column('completed_at',sa.DateTime(timezone=True), nullable=True) ,
     )
 

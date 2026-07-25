@@ -21,22 +21,6 @@ def get_card_access(card_id: int, db: Session, current_user: User) -> Card:
             status_code=status.HTTP_404_NOT_FOUND, 
             detail="Tarjeta no encontrada"
             )
-
-    # # buscamos la lista de la tarjeta
-    # board_list = db.query(BoardList).filter(BoardList.id == card.list_id).first()
-    # if not board_list:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_404_NOT_FOUND, 
-    #         detail="Lista no encontrada"
-    #         )
-
-    # #buscamos el tabletor al que pertenece la tarjeta    
-    # board = db.query(Board).join(BoardList).filter(BoardList.id == card.list_id).first()
-    # if not board or board.owner_id != current_user.id:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN, 
-    #         detail="No tienes permiso para acceder a esta tarjeta"
-    #         )
     
     return card
 
@@ -127,15 +111,16 @@ def worklogs_by_card(
     #verificamos que la tarjeta existe y que el usuario tiene acceso
     get_card_access(card_id, db, current_user)
 
-    #filtramos por card_id Y por user_id para que sólo devuelva los worklogs del usuario autenticado
-    worklogs = db.query(WorkLog).filter(
-        WorkLog.card_id == card_id,
-        WorkLog.user_id == current_user.id
-    ).order_by(WorkLog.date).all()
-    
+    #q devuelva los worklogs de los usuarios
+    worklogs = (
+        db.query(WorkLog)
+        .filter(WorkLog.card_id == card_id)
+        .order_by(WorkLog.date)
+        .all()
+    ) 
     return worklogs
 
-'''Actualizael registro de horas de trabajo. 
+'''Actualiza el registro de horas de trabajo. 
 Sólo el owner_id del worklog puede actualizarlo.'''
 @router.put("/{worklog_id}", response_model=WorkLogOut)
 def update_worklog(

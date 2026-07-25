@@ -98,13 +98,22 @@ def test_card_total_hours_all_users(client):
     assert len(card["hours_per_user"]) == 2
 
 def test_worklogs_card_own_entries(client):
-    """Cada usuario ve el "hours" sólo de sus propias horas"""
+    """Cada usuario ve las horas de todo el tablero"""
     julia_headers=register_and_login(client, email="julia4@neocare.com")
     carlos_headers=register_and_login(client, email="carlos4@neocare.com")
     card_id=_setup_card(client, julia_headers)
 
     client.post("/api/v1/worklogs/", json={"card_id":card_id,"hours":2,"date":datetime.now(timezone.utc).isoformat()}, headers=carlos_headers)
 
-    julia_view=client.get(f"/api/v1/worklogs/card/{card_id}", headers=julia_headers).json()
-    assert len(julia_view) ==1
-    assert julia_view[0]["hours"] == 2
+    #print("Post status:", res.status_code)
+    #print("Post body:", res.json())
+
+    julia_view=client.get(f"/api/v1/cards/{card_id}", headers=julia_headers).json()
+
+    #print("GET BODY:", julia_view)
+
+    #assert len(julia_view) ==1
+    #assert julia_view[0]["hours"] == 2
+    assert len(julia_view["hours_per_user"]) == 1
+    assert julia_view["hours_per_user"][0]["user_email"] == "carlos4@neocare.com"
+    assert julia_view["hours_per_user"][0]["total_hours"] == 2    

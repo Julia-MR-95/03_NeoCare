@@ -94,7 +94,7 @@ class CardCreate(BaseModel):
     description: Optional[str] = None
     list_id: int
     assignee_id: Optional[int] = None
-    assignee: Optional[UserSimple] = None #mostrar datos responsable tarjeta
+    #assignee: Optional[UserSimple] = None #mostrar datos responsable tarjeta
     due_date: Optional[datetime] = None
     order: Optional[int] = 0
 
@@ -123,7 +123,7 @@ class CardOut(BaseModel):
     order: int
     created_at: datetime
     updated_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None #no completado al momento de crearse
+    completed_at: datetime | None = None #no completado al momento de crearse
 
     total_hours: float = 0 #inicio de hs totales es 0
     hours_per_user: List[HoursPerUser] = [] #muestras horas wl por usuario

@@ -34,8 +34,9 @@ def test_moving_card_completed_automatic_worklog(client):
     assert res.status_code==200
     assert res.json()["completed_at"] is not None
 
-    logs=client.get("/api/v1/worklogs/cards/{card['id']}", headers=headers).json()
+    logs=client.get(f"/api/v1/worklogs/card/{card['id']}", headers=headers).json()
     automatic_logs=[l for l in logs if l["is_automatic"]]
+
     #recorre logs y se queda solo c/lq cumplen la condicion l["is_automatic"]=True
     assert len(automatic_logs)==1
     assert automatic_logs[0]["hours"]>=0.25 #mínimo de 0.25h aunque hayan pasado segundos
@@ -49,10 +50,10 @@ def test_removing_card_completed_removes_automatic_worklog(client):
 
     #la metemos en Completado
     card=client.post("/api/v1/cards/", json={"title":"Salida Completado", "list_id":pendiente['id'],"order":0}, headers=headers).json()
-    client.patch(f"/api/v1/worklogs/card/{card['id']}/move", json={"list_id":completado['id'], "order":0}, headers=headers)
+    client.patch(f"/api/v1/cards/{card['id']}/move", json={"list_id":completado['id'], "order":0}, headers=headers)
     #la sacamos de Completado
-    res=client.patch(f"/api/v1/worklogs/card/{card['id']}/move", json={"list_id":pendiente['id'],"order":0}, headers=headers)
+    res=client.patch(f"/api/v1/cards/{card['id']}/move", json={"list_id":pendiente['id'],"order":0}, headers=headers)
     assert res.json()["completed_at"] is None
 
     logs=client.get(f"/api/v1/worklogs/card/{card['id']}", headers=headers).json()
-    assert len([l for l in logs if l["is_automstic"]])==0
+    assert len([l for l in logs if l["is_automatic"]])==0
