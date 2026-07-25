@@ -2,7 +2,9 @@
 
 ## Información general:
 Proyecto: Tablero de trabajo para NeoCare Health Kanban
+
 Fecha de realización: julio de 2026
+
 Documento de control de calidad (QA) del backend y frontend  de NeoCare Health. En este, se resumen los endpoints probados, su estado actual y los problemas detectados y corregidos durante las pruebas realizadas.
 
 ## Pruebas Swagger UI manuales
@@ -11,6 +13,7 @@ En desarrollo local (http://127.0.0.1:8000) con PostgreSQL (neocare_db) como bas
 Se verificaron un ttoal de 29 endpoints que funcionaron correctamente. Para realizar cualquier acción (excepto registrar usuario) hay que estar autenticado.
 
 1. Auth: /api/v1/auth
+
 Durante el login se usa el flujo estándar OAuth2PasswordRequestForm (username + password). El token JWT expira automáticamente a los 30 minutos (ACCESS_TOKEN_EXPIRE_MINUTES en .env). Tras ese tiempo, hay que volver a autenticarse en /docs. 
 
 | Método | Ruta | Resultado esperado | Estado |
@@ -19,6 +22,7 @@ Durante el login se usa el flujo estándar OAuth2PasswordRequestForm (username +
 | POST | /login | 200 OK + access_token | correcto |
 
 2. Users: /api/v1/users
+
 El método 'DELETE /me' desactiva la cuenta (is_active = False) sin eliminar el registro para poder preservar integridad referencial con borads/cards/worklogs.
 'UserOut' nunca expone 'hashed_password'.
 
@@ -31,6 +35,7 @@ El método 'DELETE /me' desactiva la cuenta (is_active = False) sin eliminar el 
 | GET | /{user_id} | 200 OK - prefil de otro usuario | Sí | correcto |
 
 3. Boards: /api/v1/boards
+
 Regla verificada: un usuario sólo puede modificar/eliminar boards de los que es 'owner_id'. 
 
 | Método | Ruta | Resultado esperado | Estado |
@@ -50,6 +55,7 @@ Regla verificada: un usuario sólo puede modificar/eliminar boards de los que es
 | DELETE | /{list_id} | 204 No Content | correcto |
 
 5. Cards: /api/v1/cards
+
 Reglas verificadas: acceso de lectura validado por cadena 'card -> list -> board -> owner_id'; eliminación ('DELETE') permitido solo al creador.
 
 | Método | Ruta | Resultado esperado | Estado |
@@ -137,6 +143,8 @@ Todos los usuarios pueden acceder a todos los informes de horas por usuario y ho
 7 | Varios errores de sintaxis JSX/TS a lo largo del desarrollo | Errores de tecleo al copiar/adaptar el código a mano | Corregiso uno a uno
 
 ### Pytest
+| # | Bug | Causa | Corrección |
+| :--- | :---: | :---: | ---: |
 1 | Error de zonas horarias 'TypeError: can't substract offset-naive and offset-aware datetimes' | 'created_at' era un datetime naive mientras que 'datetime.now(timezone.utc)' era aware | Normalización de 'created_at' a un datetime aware
 2 | Rutas incorrectas en los tests | Se corrigieron rutas y llamadas al endpoint (especialmente de WorkLogs)
 3 | Enpoint incorrecto en pruebas | Se ajustaron las pruebas para utilizar el enpoint adecuado
