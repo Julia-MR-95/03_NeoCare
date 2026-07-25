@@ -9,6 +9,13 @@ def _setup_board_two_cards(client, headers): #función de uso interno
     card2=client.post("/api/v1/cards", json={"title":"Tarea 2","list_id":lst["id"],"order":1}, headers=headers).json()
     return board["id"], card1["id"], card2["id"]
 
+    logs = client.get(
+        f"/api/v1/worklogs/card/{card1}",
+        headers=julia_headers,
+    )
+
+    print(logs.json())
+
 def test_hours_by_card_report(client):
     headers=register_and_login(client, email="reportes1@neocare.com")
     board_id, card1, card2 = _setup_board_two_cards(client, headers)
@@ -28,6 +35,7 @@ def test_hours_by_user_report(client):
     board_id, card1, _ = _setup_board_two_cards(client, julia_headers)
 
     client.post("/api/v1/worklogs/", json={"card_id":card1,"hours":4,"date":datetime.now(timezone.utc).isoformat()}, headers=carlos_headers)
+    client.post("/api/v1/worklogs/",json={"card_id": card1,"hours": 2,"date": datetime.now(timezone.utc).isoformat(),},headers=julia_headers,)
 
     res=client.get(f"/api/v1/reports/board/{board_id}/hours-by-user", headers=julia_headers)
     assert res.status_code == 200
