@@ -22,7 +22,8 @@ Base.metadata.create_all(bind=engine)
 # permite peticiones desde el frontend q tiene url distinta al API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://03-neo-care.vercel.app"],
+    allow_origins=["http://localhost:5173"],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True, #permite enviar cookies
     allow_methods=["*"], #permite todos los métodos
     allow_headers=["*"], #permite todas las cabeceras
