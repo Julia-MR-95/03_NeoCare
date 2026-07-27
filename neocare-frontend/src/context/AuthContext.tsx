@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode}) {
     const form = new URLSearchParams()
     form.set('username', email)
     form.set('password', password)
-    const res = await apiClient.post('/auth/login', form, {
+    const res = await apiClient.post('/v1/auth/login', form, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     })
     localStorage.setItem('access_token', res.data.access_token)

@@ -6,6 +6,7 @@ import {
 import apiClient from '../../api/clients'
 import KanbanColumn from './KanbanColumn'
 import CardItem from './CardItem'
+import { useAuth } from '../../context/AuthContext'
 import type { BoardList, Card } from '../../types'
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 export default function KanbanBoard({ lists, setLists}: Props) {
     const [activeCard, setActiveCard] = useState<Card | null>(null)
     const sensors= useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 }}))
+    const { logout } = useAuth()
 
     const findListByCardId = (cardId: number) => lists.find((l) => l.cards.some((c) => c.id === cardId))
 
@@ -105,6 +107,15 @@ export default function KanbanBoard({ lists, setLists}: Props) {
 
 
     return (
+        <div>                                                                         
+            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem 1.5rem 0' }}>  
+                <button
+                    onClick={logout}
+                    style={{ padding: '6px 12px', background: 'transparent', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '13px', color: '#6b7280', cursor: 'pointer' }}
+                >
+                    Cerrar sesión
+                </button>
+            </div>
         <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}
@@ -133,5 +144,6 @@ export default function KanbanBoard({ lists, setLists}: Props) {
                 )}
                 </DragOverlay>
             </DndContext>
+        </div>
     )
 }
