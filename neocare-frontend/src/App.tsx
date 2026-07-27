@@ -24,7 +24,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<PrivateRoute><BoardPage /></PrivateRoute>} />
           <Route path="/hours" element={<PrivateRoute><MyHoursPage /></PrivateRoute>} />
-          <Route path="/report" element={<PrivateRoute><ReportPage /></PrivateRoute>} />
+          <Route path="/reports" element={<PrivateRoute><ReportPage /></PrivateRoute>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

@@ -8,6 +8,7 @@ import KanbanColumn from './KanbanColumn'
 import CardItem from './CardItem'
 import { useAuth } from '../../context/AuthContext'
 import type { BoardList, Card } from '../../types'
+import { useNavigate } from 'react-router-dom'
 
 interface Props {
     lists: BoardList[]
@@ -18,6 +19,7 @@ export default function KanbanBoard({ lists, setLists}: Props) {
     const [activeCard, setActiveCard] = useState<Card | null>(null)
     const sensors= useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 }}))
     const { logout } = useAuth()
+    const navigate = useNavigate()
 
     const findListByCardId = (cardId: number) => lists.find((l) => l.cards.some((c) => c.id === cardId))
 
@@ -107,7 +109,7 @@ export default function KanbanBoard({ lists, setLists}: Props) {
 
 
     return (
-        <div>                                                                         
+        <div>   {/* Botón CERRAR SESION */}                                                                      
             <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem 1.5rem 0' }}>  
                 <button
                     onClick={logout}
@@ -116,6 +118,17 @@ export default function KanbanBoard({ lists, setLists}: Props) {
                     Cerrar sesión
                 </button>
             </div>
+            <div 
+                style={{display: 'flex',justifyContent: 'flex-end',gap: '1rem',marginBottom: '1rem',}}
+            > {/* ACCESO /HOURS Y /REPORTS */}
+                <button onClick={() => navigate('/hours')}>
+                    Mis horas
+                </button>
+
+                <button onClick={() => navigate('/reports')}>
+                    Informes
+                </button>
+            </div>   
         <DndContext
             sensors={sensors}
             collisionDetection={closestCorners}
