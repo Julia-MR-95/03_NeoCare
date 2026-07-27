@@ -7,7 +7,12 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
 #conexión al motor de la base de datos usando la URL de configuración
-engine = create_engine(settings.DATABASE_URL)
+#modificamos para el despliege
+#engine = create_engine(settings.DATABASE_URL)
+engine = create_engine(
+    settings.DATABASE_URL,
+    pool_pre_ping=True
+)
 
 #cada petición HTTP usará una sesión independiente
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
