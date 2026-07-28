@@ -3,7 +3,7 @@ El proyecto es el desarrollo full-stack de una web ligera de uso interno para ay
 
 El objetivo es permitir a un usuario autenticado acceder a un tablero kanban, crear y editar tarjetas, moverlas entre columnas de flujo de trabajo (Pendiente, En progreso, En revisión, y Completado) mediante arrastrar y soltar, registrar las horas trabajadas por usuario, revisar hojas de tiempo personales, generar informes semanales, exportar datos e incluir un conjunto pequeño de mejoras útiles de productividad.
 
-# Tecnología usada
+# 1. Tecnología usada
 ## Backend
 alembic==1.18.5
 
@@ -133,7 +133,7 @@ testclient de FastAPI
 
 pruebas manuales end-to-end (frontend)
 
-# Configuración local
+# 2. Configuración local
 Requisitos previos: Python 3.11 y PostgreSQL instalado y corriendo | Node.js 18+ y npm
 
 ## Backend
@@ -167,7 +167,7 @@ npm run dev
 
 La app queda en http://localhost:5173 .
 
-# Variables de entorno
+# 3. Variables de entorno
 1. neocare-backend/.env
 DATABASE_URL | cadena de conexión a PostgreSQL
 
@@ -182,7 +182,7 @@ FRONTEND_URL | URL del frontend desplegado para CORS
 2. neocare-frontend/.env
 VITE_API_URL | URL del backend + /api/v1
 
-# Estructura de la BBDD
+# 4. Estructura de la BBDD
 users            id, email, full_name, hashed_password, is_active, created_at
 boards           id, title, owner_id → users, created_at
 board_lists      id, board_id → boards, title, order
@@ -200,7 +200,7 @@ El borrado en cascada está configurado en "list_id", "card_id" y "board_id". Si
 
 Todas las migraciones pueden verse en "neocare-backend/alembic/versions/".
 
-# Enpoints principales de la API
+# 5. Enpoints principales de la API
 Documentación interactiva completa en "/docs".
 
 | Método | Ruta | Qué hace |
@@ -216,12 +216,27 @@ GET/POST/PUT/DELETE | /api/v1/worklogs/ | Registros de horas
 GET | /api/v1/reports/board/{id}/hours-by-card | Horas totales por tarjeta
 GET | /api/v1/reports/board/{id}/hours-by-user | Horas totales por usuario
 
-# Rutas del frontend
+# 6. Rutas del frontend
 "/login" | Inicio de sesión
 "/" | Tablero kanban
 "/hours" | Mis horas (vista semanal personal)
-"/reports" | Informe de horas por tarjeta¡/usuario con exportación CSV
+"/reports" | Informe de horas por tarjeta/usuario con exportación CSV
 
 Todas las rutas, a excepción de "/login", requieren inicio de sesión y, si el token caduca a mitad de uso, se guarda dónde se encontraba y el reinicio de sesión te devuelve ahí.
 
-# Despliegue en producción
+# 7. Despliegue en producción
+Se sube el proyecto a GitHub desde la consola de Visual Code Studio, y se inicia sesión en ambas tecnologías desde la cuenta de GitHub.
+## Render (backend)
+Durante el despliegue ha sido necesario modificar la conexión SLQAlchemy para aceptar la  URL proporcionada por Render. El despliegue se ha hecho de forma manual, importando el proyecto desde GitHub.
+1. Se crea la BBDD PostgreSQL en Render.
+2. Se crea un "Web Service" apuntando al PostgreSQL: 
+    Root directory | neocare-backend
+    Build command | pip install -r requirements.txt
+    Start command | uvicorn app.main:app --host 0.0.0.0 --port $PORT
+3. Se añaden las variables de entorno del punto 3 y se usa la "Internal Database URL" de PostgreSQL que proporciona Render para "DATABASE_URL".
+
+## Vercel (frontend)
+1. Se importa el repositorio de GitHub con "New Project".
+    Root directory | neocare-frontend
+    Framework preset | Vite
+    Variable de entorno | VITE_API_URL: URL de render + "/api/v1"

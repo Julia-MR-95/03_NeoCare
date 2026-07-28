@@ -151,6 +151,19 @@ Todos los usuarios pueden acceder a todos los informes de horas por usuario y ho
 4 | Error en el informe por usuario |altaba la creación del worklog de Julia para sumarla a la de Carlos | Se añadió la creación del registro faltante |
 5 | Eliminación del WorkLog automático | ---- | Se verifica que únicamente se elemina el WorkLog automático y los manuales no se modifican |
 
+### Despliegue
+| # | Bug | Causa | Corrección |
+| :--- | :---: | :---: | ---: |
+| 1 | Render no encontraba requirements.txt | requirements.txt sí existe | Se actualiza y se hace un git push
+| 2 | DATABASE_URL incorrecta | La URL proporcionada por Render utilizaba un formato distinto | Se copia la URL interna de PostgreSQL de Render y actualizamos la variable de entorno
+| 3 | Push rechazado | git devolvía "Updates were rejected because the remote contains work that you do not have locally" | Se soluciona con git pull --rebase origin main y git push origin main
+| 4 | Frontend no iniciaba sesión | Se revisó CORS, VITE_API_URL, rutas /api/v1, AuthContext, Axios, Render y Vercel | Se corrigió la comunicación entre frontend y backend utilizando la URL pública de Render
+| 5 | Endopoint incorrecto de WorkLogs | TypeError al intentar acceder a "logs[i]["is_automatic] | El test llamaba al endpoint equivocado | Unificar la ruta utilizada por la API y los tests
+| 6 | Rutas "/hours" y "/reports" devolvían 404 | Accediendo manualmente Vercel respondía con error 404 | Se añadieron botones de navegación dentro de la app para utilizar React Router
+| 7 | Swagger funcionaba, pero Vercel no | Frontend tenía una configuración incorrecta | Se revisa variables de entorno, URL del backend, CORS, despliegue en Vercel 
+| 8 | No hay botones de navegación | No hay botón de "Cerrar sesión" o para redirigir a "/hours" y "/reports" | Se añaden los botones
+
+
 ## Infraestructura verificada
 1. Alembic configurado y sincronizado con el esato actual de la BBDD
 2. CORS configurado para permitir peticiones del frontend ('localhost:5000', dominio de producción).
