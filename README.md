@@ -240,3 +240,7 @@ Durante el despliegue ha sido necesario modificar la conexión SLQAlchemy para a
     Root directory | neocare-frontend
     Framework preset | Vite
     Variable de entorno | VITE_API_URL: URL de render + "/api/v1"
+
+# 8. URLs despliegue
+1. Render: https://zero3-neocare.onrender.com/docs
+2. Vercel: 03-neo-care.vercel.app 
