@@ -110,7 +110,7 @@ export default function KanbanBoard({ lists, setLists}: Props) {
 
     return (
         <div>   {/* Botón CERRAR SESION */}                                                                      
-            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem 1.5rem 0' }}>  
+            <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '1rem 1.5rem 0' }}>  
                 <button
                     onClick={logout}
                     style={{ padding: '6px 12px', background: 'transparent', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '13px', color: '#6b7280', cursor: 'pointer' }}
